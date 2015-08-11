@@ -143,6 +143,7 @@ data deq(sll_node **tail){
     //Structure is very simple
     struct tree_node{
         data mydata;
+        int height;
         tree_node *left;
         tree_node *right;
     };
@@ -226,8 +227,75 @@ data deq(sll_node **tail){
 //Binary Search Tree end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 //Balanced Binary search tree*************************************************************
-
+    //For your knd information, we are implementing AVL tree, not redblack tree which use extra color information
+    //We need to implemet rotaion utility function seperately so that code looks clear
+    tree_node *right_rotate(tree_node *parent){
+        tree_node *left_child = parent->left;
+        tree_node *transfer_node = left_child->right;
+        parent->left=transfer_node;
+        left_child->right=parent;
+        int left_height = parent->left!=NULL ? parent->left->height:0;
+        int right_height = parent->right!=NULL ? parent->right->height:0;
+        parent->height = (left_height > right_height) ? left_height+1 : right_height+1;
+        int child_left_height = left_child->left!=NULL ? left_child->left->height:0;
+        int child_right_height = left_child->right!=NULL ? left_child->right->height:0;
+        left_child->height = (child_left_height > child_right_height) ? child_left_height+1 : child_right_height+1;
+        return left_child;
+    }
+    tree_node *left_rotate(tree_node *parent){
+        tree_node *right_child = parent->right;
+        tree_node *transfer_node = right_child->left;
+        parent->left = transfer_node;
+        right_child->left=parent;
+        int left_height = parent->left!=NULL ? parent->left->height:0;
+        int right_height = parent->right!=NULL ? parent->right->height:0;
+        parent->height = (left_height > right_height) ? left_height+1 : right_height+1;
+        int child_left_height = right_child->left!=NULL ? right_child->left->height:0;
+        int child_right_height = right_child->right!=NULL ? right_child->right->height:0;
+        right_child->height = (child_left_height > child_right_height) ? child_left_height+1 : child_right_height+1;
+        return right_child;
+    }
+    //Insert in AVL tree
+    tree_node *balanced_tree_insert(tree_node *root,data mydata){
+        if(root==NULL){
+            tree_node *new_node = (tree_node *)malloc(sizeof(tree_node));
+            new_node->left=NULL;
+            new_node->right=NULL;
+            new_node->height=0;
+            new_node->mydata = mydata;
+            return new_node;
+        }
+        else{
+            if(mydata.data1 < root->mydata.data1){
+                root->left = balanced_tree_insert(root->left,mydata);
+            }
+            else{
+                root->right = balanced_tree_insert(root->right,mydata);
+            }
+        }
+        int left_height = root->left!=NULL ? root->left->height:0;
+        int right_height = root->right!=NULL ? root->right->height:0;
+        root->height =(left_height > right_height) ? left_height+1 : right_height +1;
+        if(left_height - right_height > 1 && mydata.data1<root->left->mydata.data1){
+            return right_rotate(root);
+        }
+        else if(left_height - right_height > 1 && mydata.data1 > root->left->mydata.data1){
+            root->left = left_rotate(root->left);
+            return right_rotate(root);
+        }
+        else if(left_height - right_height <-1 && mydata.data1>root->right->mydata.data1){
+            return left_rotate(root);
+        }
+        else if(left_height - right_height <-1 && mydata.data1<root->right->mydata.data1){
+            root->right = right_rotate(root->right);
+            return left_rotate(root);
+        }
+        else{
+            return root;
+        }
+    }
 //Balance Binary search tree end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 int main(){
 /*
     //Linked list check======================================
@@ -387,5 +455,15 @@ int main(){
     //Binary search tree check end+++++++++++++++++++++++++++++++++++++++++
 */
 
+    //Balanced Binary search tree check======================================
+    tree_node *root = NULL;
+    data mydata;
+    for(int i=0;i<15;i++){
+        mydata.data1=rand()%100;
+        root = balanced_tree_insert(root,mydata);
+    }
+    //Inorder prints elements in sorted format
+    inorder(root);
+    //Balanced Binary search tree check end+++++++++++++++++++++++++++++++++++
     return 0;
 }
