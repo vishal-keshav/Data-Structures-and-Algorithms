@@ -296,6 +296,23 @@ data deq(sll_node **tail){
     }
 //Balance Binary search tree end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+//Graph************************************************************************************
+    //Since most of the coding problems in challages are based on graph operation like going through neighbours
+    //Instead of Adjancy matrix(good for lookup), we go for Adjecency list(good for graph operation)
+    //We assume no edge is added twice and we consider undirected graph(as directed graph is more easy)
+    void add_edge(sll_node ***graph,int V,int src,int des){
+        sll_node **mygraph = (*graph);
+        sll_node *destination = (sll_node *)malloc(sizeof(sll_node));
+        sll_node *source = (sll_node *)malloc(sizeof(sll_node));
+        destination->mydata.data1 = des;
+        source->mydata.data1 = src;
+        destination->next = mygraph[src];
+        mygraph[src] = destination;
+        source->next = mygraph[des];
+        mygraph[des] = source;
+    }
+//Graph ends~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 int main(){
 /*
     //Linked list check======================================
@@ -454,7 +471,7 @@ int main(){
     inorder(root);
     //Binary search tree check end+++++++++++++++++++++++++++++++++++++++++
 */
-
+/*
     //Balanced Binary search tree check======================================
     tree_node *root = NULL;
     data mydata;
@@ -465,5 +482,30 @@ int main(){
     //Inorder prints elements in sorted format
     inorder(root);
     //Balanced Binary search tree check end+++++++++++++++++++++++++++++++++++
+    */
+    //Graph check===================================================
+    sll_node **graph=NULL;
+    int V=4;
+    graph = (sll_node **)malloc(sizeof(sll_node *)*V);
+    for(int i=0;i<V;i++){
+        graph[i]=NULL;
+    }
+    add_edge(&graph,V,0,1);
+    add_edge(&graph,V,0,3);
+    add_edge(&graph,V,1,2);
+    add_edge(&graph,V,2,3);
+    add_edge(&graph,V,3,1);
+    //Printing neighbors of each vertex
+    sll_node *temp;
+    for(int i=0;i<V;i++){
+        cout << "Neighbours of " << i << ":";
+        temp = graph[i];
+        while(temp){
+            cout << temp->mydata.data1 << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+    //Graph check end+++++++++++++++++++++++++++++++++++++++++++++++++
     return 0;
 }
