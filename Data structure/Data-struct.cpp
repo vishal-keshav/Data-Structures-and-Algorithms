@@ -31,6 +31,7 @@ using namespace std;
 struct data{
     int data1;
     char data2;
+    int data3;
 };
 
 //Singly Linked List start************************************************************
@@ -313,6 +314,37 @@ data deq(sll_node **tail){
     }
 //Graph ends~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+//Hash*************************************************************************************
+    //Hashing collision resolvs in two ways, chaining and open addressing.
+    //We chose open addressing as most of the time is is unknown of the elemnets number
+    //Defenition of hash function may change
+    int hash_function(int data,int N){
+        return data%N;
+    }
+    void hash_in(sll_node **myhash,int data,int *hash_key,int N){
+        //If element is not in hash map initailly
+        int block = hash_function(data,N);
+        sll_node *temp = (sll_node *)malloc(sizeof(sll_node));
+        temp->mydata.data3=(*hash_key);
+        temp->mydata.data1=data;
+        temp->next = myhash[block];
+        myhash[block] = temp;
+        (*hash_key)++;
+    }
+    int hash_out(sll_node **myhash,int data,int N){
+        int block = hash_function(data,N);
+        sll_node *temp = myhash[block];
+        while(temp!=NULL){
+            //Comarator corresponding to element is used here
+            if(temp->mydata.data1==data){
+                return temp->mydata.data3;
+            }
+            temp = temp->next;
+        }
+        return -1;
+    }
+//Hash end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 int main(){
 /*
     //Linked list check======================================
@@ -482,7 +514,8 @@ int main(){
     //Inorder prints elements in sorted format
     inorder(root);
     //Balanced Binary search tree check end+++++++++++++++++++++++++++++++++++
-    */
+*/
+/*
     //Graph check===================================================
     sll_node **graph=NULL;
     int V=4;
@@ -507,5 +540,35 @@ int main(){
         cout << endl;
     }
     //Graph check end+++++++++++++++++++++++++++++++++++++++++++++++++
+*/
+/*
+    //Hash check start=================================================
+    sll_node **myhash;
+    int hash_size = 10;
+    myhash = (sll_node **)malloc(sizeof(sll_node *)*hash_size);
+    for(int i=0;i<hash_size;i++){
+        myhash[i]=NULL;
+    }
+    int hash_key;
+    hash_key=0;
+    int *data_arr = (int *)malloc(sizeof(int)*hash_size);
+    for(int i=0;i<hash_size;i++){
+        data_arr[i] = rand()%1000;
+    }
+    //Entering 10 random data to be hashed
+    for(int i=0;i<hash_size;i++){
+        hash_in(myhash,data_arr[i],&hash_key,hash_size);
+    }
+    for(int i=0;i<hash_size;i++){
+         sll_node *temp = myhash[i];
+         while(temp!=NULL){
+            cout << temp->mydata.data3 << " ";
+            temp = temp->next;
+         }
+         cout << endl;
+        cout << data_arr[i] << " "<<hash_out(myhash,data_arr[i],hash_size) << endl;
+    }
+    //Hash check end++++++++++++++++++++++++++++++++++++++++++++++++++
+*/
     return 0;
 }
