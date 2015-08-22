@@ -19,6 +19,7 @@
     8. Balanced Binary Search Tree
     9. Graph
     10. Hash
+    11. Union-find
 */
 
 #include <iostream>
