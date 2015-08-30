@@ -124,6 +124,9 @@ void count_sort(data *mydata,int start_index,int end_index){
 
 //Bonus pseudo code for subset generation
 /*
+    //Obtain number 0 to pow(2,N)
+    //Convert each number to bits
+    //print the value corresponding to active bits
 for(int i=0;i<power(2,N);i++){
     for(int j=0;j<N;j++){
         if(i & 1<<j){
@@ -135,6 +138,59 @@ for(int i=0;i<power(2,N);i++){
 */
 //Subset generation ends
 
+//String matching============================================
+    int string_length(char *input){
+        int len=0;
+        while(*input!='\0'){
+            len++;
+            input++;
+        }
+        return len;
+    }
+    int pattern_match(char *str_main,char *str){
+        int ret = -1;
+        int n = string_length(str_main);
+        int m= string_length(str);
+        //Checking corner cases
+        if(n<m || n==0){
+            return -1;
+        }
+        //Main case
+        int prime = 1000000000+7;
+        int hash_str = 0;
+        int hash_main=0;
+        int base=256;
+        int power = 1;
+        for(int i=0;i<m;i++){
+            hash_str = (hash_str*base + (int)str[i])%prime;
+            hash_main = (hash_main*base + (int)str_main[i])%prime;
+            if(i<m-1){
+                power = (power*base)%prime;
+            }
+        }
+        for(int i=0;i<=n-m;i++){
+            if(hash_str==hash_main){
+                int j;
+                for(j=0;j<m;j++){
+                    if(str_main[i+j]!=str[j]){
+                        break;
+                    }
+                }
+                if(j==m){
+                    ret = i;
+                    break;
+                }
+            }
+            if(i<n-m){
+                hash_main = (base*(hash_main - power*str_main[i]) + str_main[i+m])%prime;
+                if(hash_main<0){
+                    hash_main = hash_main + prime;
+                }
+            }
+        }
+        return ret;
+    }
+//String matching ends++++++++++++++++++++++++++++++++++++++++++++
 
 int main(){
 /*
@@ -166,6 +222,14 @@ int main(){
         cout << mydata[i].data1 << " ";
     }
 //Counting sort check end+++++++++++++++++++++++++++++++++++++++++++++++++
+*/
+/*
+//Pattern matching check==================================================
+    char *str_main = "A quick brown fox jumped somewhere!";
+    char *str = "fox";
+    int pos = pattern_match(str_main,str);
+    cout << pos << endl;
+//Pattern matching end++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
 
     return 0;
