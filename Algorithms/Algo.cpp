@@ -114,8 +114,27 @@ void count_sort(data *mydata,int start_index,int end_index){
 //counting sort end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-//Bonus pseudo code
-//
+//Bonus pseudo code for permutaion generation
+    //Obtain next permutaon by
+    //Find largest index i such that array[i − 1] < array[i]
+    //Find largest index j such that j ≥ i and array[j] > array[i − 1]
+    //Swap array[j] and array[i − 1]
+    //Reverse the suffix starting at array[i]
+//Permutaion generation ends
+
+//Bonus pseudo code for subset generation
+/*
+for(int i=0;i<power(2,N);i++){
+    for(int j=0;j<N;j++){
+        if(i & 1<<j){
+            print arr[j];
+        }
+    }
+    cout << endl;
+}
+*/
+//Subset generation ends
+
 
 int main(){
 /*

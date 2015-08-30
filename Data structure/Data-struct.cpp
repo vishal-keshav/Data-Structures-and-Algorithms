@@ -346,6 +346,36 @@ data deq(sll_node **tail){
     }
 //Hash end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+//Union-find******************************************************************************
+//Uses array data structure declared in main(depending on the max size of set)
+//Implementing Union-find by rank combined with path compression for constant amortized complexity
+int uf_find(int *set_array,int node){
+    if(set_array[node]!=set_array[set_array[node]]){
+        set_array[node] = uf_find(set_array,set_array[node]);
+    }
+    return set_array[node];
+}
+
+bool uf_union(int *set_array,int *rank_array,int node1,int node2){
+    int parent1 = uf_find(set_array,node1);
+    int parent2 = uf_find(set_array,node2);
+    int temp;
+    if(parent1==parent2){
+        return false;
+    }
+    if(rank_array[parent1]>rank_array[parent2]){
+        temp = parent1;
+        parent1 = parent2;
+        parent2 = temp;
+    }
+    if(rank_array[parent1]==rank_array[parent2]){
+        rank_array[parent2]++;
+    }
+    set_array[parent1]=parent2;
+    return true;
+}
+//Union-find end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 int main(){
 /*
     //Linked list check======================================
@@ -570,6 +600,31 @@ int main(){
         cout << data_arr[i] << " "<<hash_out(myhash,data_arr[i],hash_size) << endl;
     }
     //Hash check end++++++++++++++++++++++++++++++++++++++++++++++++++
+*/
+/*
+//Union-find check start===============================================
+    int set_size = 10;
+    int *set_array = (int *)malloc(sizeof(int)*set_size);
+    int *rank_array = (int *)malloc(sizeof(int)*set_size);
+    //Initialization
+    for(int i=0;i<set_size;i++){
+        set_array[i] = i;
+        rank_array[i] = 1;
+    }
+    for(int i=0;i<set_size;i++){
+        int random_node1 = rand()%set_size;
+        int random_node2 = rand()%set_size;
+        if(uf_union(set_array,rank_array,random_node1,random_node2)){
+            cout << "Successfully combined " << random_node1 << " and " << random_node2 << endl;
+        }
+        else{
+            cout << "Could not combine " << random_node1 << " and " << random_node2 << endl;
+        }
+    }
+    for(int i=0;i<set_size;i++){
+        cout << "parent of " << i << " is " << uf_find(set_array,i) << endl;
+    }
+//Union-find check end++++++++++++++++++++++++++++++++++++++++++++++++
 */
     return 0;
 }
