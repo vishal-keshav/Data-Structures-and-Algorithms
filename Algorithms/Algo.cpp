@@ -33,6 +33,53 @@ struct data{
     int data3;
 };
 
+//Singly Linked List start************************************************************
+struct sll_node{
+    int node;
+    int weight;
+    sll_node * next;
+};
+//Queue start**************************************************************************
+//Uses already created singly linked list structure
+void enq(sll_node **head,sll_node **tail,int node){
+    sll_node * newnode = (sll_node *)malloc(sizeof(sll_node));
+    newnode->node = node;
+    newnode->next=NULL;
+    if((*tail)==NULL){
+        (*head)=newnode;
+        (*tail)=newnode;
+    }
+    else{
+        (*head)->next = newnode;
+        (*head)=newnode;
+    }
+}
+int deq(sll_node **tail){
+    sll_node *newnode = (*tail);
+    int node = newnode->node;
+    (*tail)=newnode->next;
+    free(newnode);
+    return node;
+}
+//Queue end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//Stack start*************************************************************************
+//Uses already created singly linked list structure
+void push(sll_node **head,int node){
+    sll_node *newnode = (sll_node *)malloc(sizeof(sll_node));
+    newnode->node=node;
+    newnode->next=(*head);
+    (*head)=newnode;
+}
+int pop(sll_node **head){
+    sll_node * newnode=(*head);
+    (*head)=newnode->next;
+    int node=newnode->node;
+    free(newnode);
+    return node;
+}
+//Stack end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 //Binary search is implemented in Data-struct.cpp file*****************************************
 
 //Binary search ends~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -192,6 +239,128 @@ for(int i=0;i<power(2,N);i++){
     }
 //String matching ends++++++++++++++++++++++++++++++++++++++++++++
 
+//Graph Algorithms
+// 1. BFS
+// 2. DFS
+// 3. Single source shortest path (Digstras and Bellman fords)
+// 4. Minimum Spanning tree (Kruskals and Prims)
+// 5. All pair shortest path (Floyed Warshall)
+// 6. Topological sorting (indegree and stack method)
+// 7. Maximum Flow algorithm(Ford fulkersons algorithm)
+
+//We will include both adjency matrix and adjency list implementation
+//in all algorithms disabling one while checking
+//Graph utilities of no use^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sll_node **Graph_mat_to_list(int **Graph_mat,int V){
+    sll_node **G = (sll_node **)malloc(sizeof(sll_node *)*V);
+    for(int i=0;i<V;i++){
+        G[i] = NULL;
+    }
+    for(int i=0;i<V;i++){
+        for(int j=0;j<V;j++){
+            if(Graph_mat[i][j]==1){
+                sll_node *temp = (sll_node *)malloc(sizeof(sll_node));
+                temp->node = j;
+                temp->next = G[i];
+                G[i] = temp;
+            }
+        }
+    }
+    return G;
+}
+void Graph_directed_to_undirected(int **Graph_mat,int V){
+    for(int i=0;i<V;i++){
+        for(int j=i+1;j<V;j++){
+            Graph_mat[j][i] = Graph_mat[i][j];
+        }
+    }
+}
+//Graph utilities of no use ends^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//Traversal algorithm
+void BFS(sll_node **Graph_list,int V,bool *visited,int start_node){
+//void BFS(int **Graph_mat,int V,bool *visited,int start_node){
+    sll_node *Q_head = NULL;
+    sll_node *Q_tail = NULL;
+    enq(&Q_head,&Q_tail,start_node);
+    visited[start_node] = true;
+    int temp_node;
+    while(Q_tail!=NULL){
+        temp_node = deq(&Q_tail);
+        cout << temp_node << " ";
+        //For Mat
+        /*for(int i=0;i<V;i++){
+            if(Graph_mat[temp_node][i]==1 && (!visited[i])){
+                enq(&Q_head,&Q_tail,i);
+                visited[i] = true;
+            }
+        }*/
+        //For List
+        sll_node *temp = Graph_list[temp_node];
+        while(temp!=NULL){
+            if(!visited[temp->node]){
+                enq(&Q_head,&Q_tail,temp->node);
+                visited[temp->node] = true;
+            }
+            temp = temp->next;
+        }
+    }
+}
+void Graph_BFS(sll_node **Graph,int V){
+//void Graph_BFS(int **Graph,int V){
+    bool *visited = (bool *)malloc(sizeof(bool)*V);
+    for(int i=0;i<V;i++){
+        visited[i] = false;
+    }
+   for(int i=0;i<V;i++){
+        if(!visited[i]){
+            BFS(Graph,V,visited,0);
+        }
+    }
+}
+void DFS(sll_node **Graph_list,int V,bool *visited,int start_node){
+//void DFS(int **Graph_mat,int V,bool *visited,int start_node){
+    sll_node *S_head=NULL;
+    push(&S_head,start_node);
+    //visited[start_node] = true;
+    int temp_node;
+    while(S_head!=NULL){
+        temp_node = pop(&S_head);
+        if(!visited[temp_node]){
+            cout << temp_node << " ";
+            visited[temp_node] = true;
+        }
+        //For mat
+        /*for(int i=0;i<V;i++){
+            if(Graph_mat[temp_node][i] && !visited[i]){
+                push(&S_head,i);
+            }
+        }*/
+        //For list
+        sll_node *temp = Graph_list[temp_node];
+        while(temp!=NULL){
+            if(!visited[temp->node]){
+                push(&S_head,temp->node);
+                //cout << "pushed "<< temp->node << " ";
+            }
+            temp = temp->next;
+        }
+
+    }
+}
+void Graph_DFS(sll_node **Graph,int V){
+//void Graph_DFS(int **Graph,int V){
+    bool *visited = (bool *)malloc(sizeof(bool)*V);
+    for(int i=0;i<V;i++){
+        visited[i] = false;
+    }
+   for(int i=0;i<V;i++){
+        if(!visited[i]){
+            DFS(Graph,V,visited,0);
+        }
+    }
+}
+//Traversal algorithm ends
+
 int main(){
 /*
 //Merge sort check====================================================
@@ -231,6 +400,40 @@ int main(){
     cout << pos << endl;
 //Pattern matching end++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
+
+//Graph check==========================================================
+    int V=6;
+    int **Graph_mat;
+    sll_node **Graph_list;
+    //Generate random graph
+    Graph_mat = (int **)malloc(sizeof(int *)*V);
+    for(int i=0;i<V;i++){
+        Graph_mat[i] = (int *)malloc(sizeof(int)*V);
+        for(int j=0;j<V;j++){
+            Graph_mat[i][j] = rand()%2;
+            //cout << Graph_mat[i][j] << " ";
+        }
+        Graph_mat[i][i]=0;
+        //cout << endl;
+    }
+    Graph_list = Graph_mat_to_list(Graph_mat,V);
+
+    sll_node *temp;
+    for(int i=0;i<V;i++){
+        cout << i << " is connected to ";
+        temp = Graph_list[i];
+        while(temp!=NULL){
+            cout << temp->node << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+    //Graph_BFS(Graph_mat,V);
+    //Graph_BFS(Graph_list,V);
+    //Graph_DFS(Graph_mat,V);
+    //Graph_DFS(Graph_list,V);
+
+//Graph check end+++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     return 0;
 }

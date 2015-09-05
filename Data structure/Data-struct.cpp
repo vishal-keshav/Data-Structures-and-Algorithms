@@ -73,7 +73,7 @@ void enq(sll_node **head,sll_node **tail,data mydata){
     sll_node * newnode = (sll_node *)malloc(sizeof(sll_node));
     newnode->mydata = mydata;
     newnode->next=NULL;
-    if((*head)==NULL){
+    if((*tail)==NULL){
         (*head)=newnode;
         (*tail)=newnode;
     }
