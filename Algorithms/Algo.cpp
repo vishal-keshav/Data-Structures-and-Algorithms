@@ -239,13 +239,13 @@ for(int i=0;i<power(2,N);i++){
     }
 //String matching ends++++++++++++++++++++++++++++++++++++++++++++
 
-//Graph Algorithms
+//Graph Algorithms===============================================
 // 1. BFS
 // 2. DFS
 // 3. Single source shortest path (Digstras and Bellman fords)
 // 4. Minimum Spanning tree (Kruskals and Prims)
 // 5. All pair shortest path (Floyed Warshall)
-// 6. Topological sorting (indegree and stack method)
+// 6. Topological sorting (indegree, stack method)
 // 7. Maximum Flow algorithm(Ford fulkersons algorithm)
 
 //We will include both adjency matrix and adjency list implementation
@@ -273,6 +273,33 @@ void Graph_directed_to_undirected(int **Graph_mat,int V){
         for(int j=i+1;j<V;j++){
             Graph_mat[j][i] = Graph_mat[i][j];
         }
+    }
+}
+int dag(int **G,int V,int start_node,bool *visited){
+    visited[start_node] = true;
+    int ret = 0;
+    for(int i=0;i<V;i++){
+        if(G[start_node][i]==1){
+            if(visited[i]){
+                G[start_node][i] = 0;
+            }
+            else{
+                ret = ret + dag(G,V,i,visited);
+            }
+        }
+    }
+    return ret+1;
+}
+bool Graph_directed_to_dag(int **Graph_mat,int V){
+    bool *visited = (bool *)malloc(sizeof(bool)*V);
+    for(int i=0;i<V;i++){
+        visited[i] = false;
+    }
+    if(dag(Graph_mat,V,0,visited)==V){
+        return true;
+    }
+    else{
+        return false;
     }
 }
 //Graph utilities of no use ends^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -360,6 +387,44 @@ void Graph_DFS(sll_node **Graph,int V){
     }
 }
 //Traversal algorithm ends
+//Topological sorting
+int *Graph_topological_sort(sll_node **G,int V){
+    int *temp = (int *)malloc(sizeof(int)*V);
+    int k=0;
+    int *indegree = (int *)malloc(sizeof(int)*V);
+    for(int i=0;i<V;i++){
+        indegree[i]=0;
+    }
+    sll_node *temp_node;
+    for(int i=0;i<V;i++){
+        temp_node = G[i];
+        while(temp_node!=NULL){
+            indegree[temp_node->node]++;
+            temp_node = temp_node->next;
+        }
+    }
+    sll_node *S_head=NULL;
+    for(int i=0;i<V;i++){
+        if(indegree[i]==0){
+            push(&S_head,i);
+        }
+    }
+    int node_zero_degree;
+    while(S_head!=NULL){
+        node_zero_degree = pop(&S_head);
+        temp[k] = node_zero_degree;
+        k++;
+        temp_node = G[node_zero_degree];
+        while(temp_node!=NULL){
+            indegree[temp_node->node]--;
+            if(indegree[temp_node->node]==0){
+                push(&S_head,temp_node->node);
+            }
+            temp_node = temp_node->next;
+        }
+    }
+    return temp;
+}
 
 int main(){
 /*
@@ -432,7 +497,20 @@ int main(){
     //Graph_BFS(Graph_list,V);
     //Graph_DFS(Graph_mat,V);
     //Graph_DFS(Graph_list,V);
-
+    if(Graph_directed_to_dag(Graph_mat,V)){
+        cout << "DAG creation completed"<< endl;
+    }
+    else{
+        cout << "DAG cannot be created" << endl;
+    }
+    Graph_mat[0][4]  =1;
+    Graph_mat[1][5]  =1;
+    Graph_mat[2][5]  =1;
+    Graph_list = Graph_mat_to_list(Graph_mat,V);
+    int *topo_sort = Graph_topological_sort(Graph_list,V);
+    for(int i=0;i<V;i++){
+        cout << topo_sort[i] << " ";
+    }
 //Graph check end+++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     return 0;
