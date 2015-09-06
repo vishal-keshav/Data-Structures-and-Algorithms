@@ -29,7 +29,7 @@ using namespace std;
 //A generic data structure
 struct data{
     int data1;
-    char data2;
+    int data2;
     int data3;
 };
 
@@ -134,6 +134,36 @@ int pop(sll_node **head){
         return minimum;
     }
 //Heap end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//Union-find******************************************************************************
+//Uses array data structure declared in main(depending on the max size of set)
+//Implementing Union-find by rank combined with path compression for constant amortized complexity
+int uf_find(int *set_array,int node){
+    if(set_array[node]!=set_array[set_array[node]]){
+        set_array[node] = uf_find(set_array,set_array[node]);
+    }
+    return set_array[node];
+}
+
+bool uf_union(int *set_array,int *rank_array,int node1,int node2){
+    int parent1 = uf_find(set_array,node1);
+    int parent2 = uf_find(set_array,node2);
+    int temp;
+    if(parent1==parent2){
+        return false;
+    }
+    if(rank_array[parent1]>rank_array[parent2]){
+        temp = parent1;
+        parent1 = parent2;
+        parent2 = temp;
+    }
+    if(rank_array[parent1]==rank_array[parent2]){
+        rank_array[parent2]++;
+    }
+    set_array[parent1]=parent2;
+    return true;
+}
+//Union-find end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 //Binary search is implemented in Data-struct.cpp file*****************************************
 
@@ -148,29 +178,29 @@ void merge_data(data *mydata,int start_index,int middle_index,int end_index){
     int running_index = 0;
     while(left_index<=middle_index && right_index<=end_index){
         if(mydata[left_index].data1<=mydata[right_index].data1){
-            temp[running_index].data1 = mydata[left_index].data1;
+            temp[running_index] = mydata[left_index];
             left_index++;
         }
         else{
-            temp[running_index].data1 = mydata[right_index].data1;
+            temp[running_index] = mydata[right_index];
             right_index++;
         }
         running_index++;
     }
         while(left_index<=middle_index){
-            temp[running_index].data1 = mydata[left_index].data1;
+            temp[running_index] = mydata[left_index];
             running_index++;
             left_index++;
         }
         while(right_index<=end_index){
-            temp[running_index].data1= mydata[right_index].data1;
+            temp[running_index]= mydata[right_index];
             running_index++;
             right_index++;
         }
     running_index=0;
     left_index = start_index;
     while(left_index<=end_index){
-        mydata[left_index].data1 = temp[running_index].data1;
+        mydata[left_index] = temp[running_index];
         left_index++;
         running_index++;
     }
@@ -562,7 +592,53 @@ void Shortest_distance_floyed(sll_node **Graph_list,int **d,int V){
         }
     }
 }
+//All pair shortest path ends
 
+//MST generation out of undirected connected graph
+int ** MST_kruskal(sll_node **Graph_list,int V){
+    //Initialization
+    int **G=(int **)malloc(sizeof(int *)*V);
+    for(int i=0;i<V;i++){
+        G[i] = (int *)malloc(sizeof(int)*V);
+        for(int j=0;j<V;j++){
+            G[i][j] = 0;
+        }
+    }
+    int E=0;
+    sll_node *temp;
+    for(int i=0;i<V;i++){
+        temp = Graph_list[i];
+        while(temp!=NULL){
+            E++;
+            temp = temp->next;
+        }
+    }
+    data *edge_array = (data*)malloc(sizeof(data)*E);
+    int k=0;
+    for(int i=0;i<V;i++){
+        temp = Graph_list[i];
+        while(temp!=NULL){
+            edge_array[k].data1 = temp->weight;
+            edge_array[k].data2 = i;
+            edge_array[k].data3 = temp->node;
+            k++;
+            temp = temp->next;
+        }
+    }
+    merge_sort(edge_array,0,E-1);
+    int *set_array = (int *)malloc(sizeof(int)*V);
+    int *set_rank = (int *)malloc(sizeof(int)*V);
+    for(int i=0;i<V;i++){
+        set_array[i] = i;
+        set_rank[i] = 1;
+    }
+    for(int i=0;i<E;i++){
+        if(uf_union(set_array,set_rank,edge_array[i].data2,edge_array[i].data3)){
+            G[edge_array[i].data2][edge_array[i].data3] = edge_array[i].data1;
+        }
+    }
+    return G;
+}
 int main(){
 /*
 //Merge sort check====================================================
@@ -657,7 +733,7 @@ int main(){
         }
     }
     cout << endl;
-    Graph_list = Graph_mat_to_list(Graph_mat,V);
+    /*Graph_list = Graph_mat_to_list(Graph_mat,V);
     for(int i=0;i<V;i++){
         cout << i << " is connected to ";
         temp = Graph_list[i];
@@ -666,7 +742,7 @@ int main(){
             temp = temp->next;
         }
         cout << endl;
-    }
+    }*/
     /*
     int *parent_relation = (int *)malloc(sizeof(int)*V);
     int *distance = (int *)malloc(sizeof(int)*V);
@@ -682,7 +758,7 @@ int main(){
         cout << parent_relation[i] << " " << distance[i] << endl;
     }
     */
-    int **distance_matrix= (int **)malloc(sizeof(int *)*V);
+    /*int **distance_matrix= (int **)malloc(sizeof(int *)*V);
     for(int i=0;i<V;i++){
         distance_matrix[i] = (int *)malloc(sizeof(int)*V);
         for(int j=0;j<V;j++){
@@ -696,8 +772,30 @@ int main(){
             cout << distance_matrix[i][j] << " ";
         }
         cout << endl;
+    }*/
+    Graph_directed_to_undirected(Graph_mat,V);
+    Graph_list = Graph_mat_to_list(Graph_mat,V);
+    for(int i=0;i<V;i++){
+        cout << i << " is connected to ";
+        temp = Graph_list[i];
+        while(temp!=NULL){
+            cout << temp->node << " (" << temp->weight << ")";
+            temp = temp->next;
+        }
+        cout << endl;
     }
-
+    cout << endl;
+    int **Graph_mat_mst = MST_kruskal(Graph_list,V);
+    sll_node **Graph_list_mst = Graph_mat_to_list(Graph_mat_mst,V);
+        for(int i=0;i<V;i++){
+        cout << i << " is connected to ";
+        temp = Graph_list_mst[i];
+        while(temp!=NULL){
+            cout << temp->node << " (" << temp->weight << ")";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
 //Graph check end+++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     return 0;
