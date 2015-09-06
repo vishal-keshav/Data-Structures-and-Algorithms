@@ -33,6 +33,11 @@ struct data{
     int data3;
 };
 
+struct heap_data{
+    int key;
+    int value;
+};
+
 //Singly Linked List start************************************************************
 struct sll_node{
     int node;
@@ -79,6 +84,56 @@ int pop(sll_node **head){
     return node;
 }
 //Stack end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//Heap Start*****************************************************************************
+    //Fixed size heap should be declared
+    //Defining functions for min heap
+    //This heapify is a non recursive efficient version and does not use unnecessary swap and child functions
+    void heapify(heap_data *heap,int index,int current_size){
+        int left;
+        int right;
+        int min_index=index;
+        heap_data temp;
+        do{
+            index=min_index;
+            left = 2*index +1;
+            right=2*index+2;
+            if(left<current_size && heap[min_index].key>heap[left].key){
+                min_index = left;
+            }
+            if(right<current_size && heap[min_index].key>heap[right].key){
+                min_index = right;
+            }
+            temp=heap[min_index];
+            heap[min_index]=heap[index];
+            heap[index]=temp;
+        }while(min_index!=index && min_index<current_size);
+    }
+    //current size will increase by one assuming all the checks have been done in main code
+    void heap_insert(heap_data *heap,int key,int data,int *current_size){
+        int index=(*current_size);
+        int parent=(index-1)/2;
+        heap_data temp;
+        heap[index].key=key;
+        heap[index].value = data;
+        (*current_size)=(*current_size)+1;
+        while(index>0 && heap[parent].key>heap[index].key){
+            temp=heap[parent];
+            heap[parent]=heap[index];
+            heap[index]=temp;
+            index=parent;
+            parent=(index-1)/2;
+        }
+    }
+    //Extracting minimum is based on assumptions that proper checks have been made for empty heap
+    heap_data extract_min(heap_data *heap,int *current_size){
+        heap_data minimum=heap[0];
+        int index = (*current_size)-1;
+        (*current_size)=(*current_size)-1;
+        heap[0]=heap[index];
+        heapify(heap,0,index);
+        return minimum;
+    }
+//Heap end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 //Binary search is implemented in Data-struct.cpp file*****************************************
 
@@ -258,9 +313,10 @@ sll_node **Graph_mat_to_list(int **Graph_mat,int V){
     }
     for(int i=0;i<V;i++){
         for(int j=0;j<V;j++){
-            if(Graph_mat[i][j]==1){
+            if(Graph_mat[i][j]>=1){
                 sll_node *temp = (sll_node *)malloc(sizeof(sll_node));
                 temp->node = j;
+                temp->weight = Graph_mat[i][j];
                 temp->next = G[i];
                 G[i] = temp;
             }
@@ -425,6 +481,87 @@ int *Graph_topological_sort(sll_node **G,int V){
     }
     return temp;
 }
+//Topological Sorting end++++++++++++++++++++++++++++++++++++++++++++++++
+//Single source shortest path algorithms
+void Shortest_path_dijktra(sll_node **Graph_list,int source,int *p,int *d,int V){
+    //Initialization
+    for(int i=0;i<V;i++){
+        p[i] = i;
+        d[i] = 1000000000+7;
+    }
+    d[source] = 0;
+    heap_data *heap = (heap_data *)malloc(sizeof(heap_data)*V);
+    heap_data mini;
+    sll_node *temp;
+    int current_size = 0;
+    heap_insert(heap,0,source,&current_size);
+    while(current_size>0){
+        mini = extract_min(heap,&current_size);
+        temp = Graph_list[mini.value];
+        while(temp!=NULL){
+            if(d[temp->node]>d[mini.value]+temp->weight){
+                d[temp->node] = d[mini.value] + temp->weight;
+                p[temp->node] = mini.value;
+                heap_insert(heap,d[temp->node],temp->node,&current_size);
+            }
+            temp = temp->next;
+        }
+    }
+}
+
+bool Shortest_path_bellman(sll_node **Graph_list,int source,int *p,int *d,int V){
+    //Initialization
+    for(int i=0;i<V;i++){
+        p[i] = i;
+        d[i] = 1000000000+7;
+    }
+    d[source] = 0;
+    sll_node *temp;
+    for(int i=0;i<V;i++){
+        for(int j=0;j<V;j++){
+            temp = Graph_list[j];
+            while(temp!=NULL){
+                if(d[j] + temp->weight < d[temp->node]){
+                    d[temp->node] = d[j] + temp->weight;
+                    p[temp->node] = j;
+                }
+                temp = temp->next;
+            }
+        }
+    }
+    for(int i=0;i<V;i++){
+        temp = Graph_list[i];
+        while(temp!=NULL){
+            if(d[temp->node]+temp ->weight <d[i]){
+                return false;
+            }
+            temp=temp->next;
+        }
+    }
+    return true;
+}
+//Single source shortest path ends
+//All pair shortest path algorithm(only calculates distance)
+void Shortest_distance_floyed(sll_node **Graph_list,int **d,int V){
+    //Initialization
+    sll_node *temp;
+    for(int i=0;i<V;i++){
+        temp = Graph_list[i];
+        while(temp!=NULL){
+            d[i][temp->node] = temp->weight;
+            temp=temp->next;
+        }
+    }
+    for(int k=0;k<V;k++){
+        for(int i=0;i<V;i++){
+            for(int j=0;j<V;j++){
+                if(d[i][j]>d[i][k] + d[k][j]){
+                    d[i][j] = d[i][k] + d[k][j];
+                }
+            }
+        }
+    }
+}
 
 int main(){
 /*
@@ -497,7 +634,7 @@ int main(){
     //Graph_BFS(Graph_list,V);
     //Graph_DFS(Graph_mat,V);
     //Graph_DFS(Graph_list,V);
-    if(Graph_directed_to_dag(Graph_mat,V)){
+    /*if(Graph_directed_to_dag(Graph_mat,V)){
         cout << "DAG creation completed"<< endl;
     }
     else{
@@ -510,7 +647,57 @@ int main(){
     int *topo_sort = Graph_topological_sort(Graph_list,V);
     for(int i=0;i<V;i++){
         cout << topo_sort[i] << " ";
+    }*/
+    //Creating a weighted graph out of unweighted graph
+    for(int i=0;i<V;i++){
+        for(int j=0;j<V;j++){
+            if(Graph_mat[i][j]==1){
+                Graph_mat[i][j] = (rand()%10) +1;
+            }
+        }
     }
+    cout << endl;
+    Graph_list = Graph_mat_to_list(Graph_mat,V);
+    for(int i=0;i<V;i++){
+        cout << i << " is connected to ";
+        temp = Graph_list[i];
+        while(temp!=NULL){
+            cout << temp->node << " (" << temp->weight << ")";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+    /*
+    int *parent_relation = (int *)malloc(sizeof(int)*V);
+    int *distance = (int *)malloc(sizeof(int)*V);
+    int source = 0;
+    Shortest_path_dijktra(Graph_list,source,parent_relation,distance,V);
+    if(Shortest_path_bellman(Graph_list,source,parent_relation,distance,V)){
+        cout << "No negative cycle" << endl;
+    }
+    else{
+        cout << "Negative cycle detected" << endl;
+    }
+    for(int i=0;i<V;i++){
+        cout << parent_relation[i] << " " << distance[i] << endl;
+    }
+    */
+    int **distance_matrix= (int **)malloc(sizeof(int *)*V);
+    for(int i=0;i<V;i++){
+        distance_matrix[i] = (int *)malloc(sizeof(int)*V);
+        for(int j=0;j<V;j++){
+            distance_matrix[i][j] = 100000000+7;
+        }
+        distance_matrix[i][i] = 0;
+    }
+    Shortest_distance_floyed(Graph_list,distance_matrix,V);
+    for(int i=0;i<V;i++){
+        for(int j=0;j<V;j++){
+            cout << distance_matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+
 //Graph check end+++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     return 0;
