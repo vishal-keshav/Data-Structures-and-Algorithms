@@ -335,7 +335,7 @@ for(int i=0;i<power(2,N);i++){
 
 //We will include both adjency matrix and adjency list implementation
 //in all algorithms disabling one while checking
-//Graph utilities of no use^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//Graph utilities of no use^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 sll_node **Graph_mat_to_list(int **Graph_mat,int V){
     sll_node **G = (sll_node **)malloc(sizeof(sll_node *)*V);
     for(int i=0;i<V;i++){
@@ -639,6 +639,72 @@ int ** MST_kruskal(sll_node **Graph_list,int V){
     }
     return G;
 }
+//MST end++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//Maximum flow algorithm================================================
+int minimum(int a,int b){
+    return (a<b?a:b);
+}
+int *BFS_find_path(int **Graph_mat,int V,int s,int d){
+    //If no path, sends NULL pointer
+    int *parent_path = (int *)malloc(sizeof(int)*V);
+    bool *visited = (bool *)malloc(sizeof(bool)*V);
+    for(int i=0;i<V;i++){
+        parent_path[i] = i;
+        visited[i] = false;
+    }
+    sll_node *Q_head=NULL;
+    sll_node *Q_tail = NULL;
+    enq(&Q_head,&Q_tail,s);
+    visited[s] = true;
+    int temp_node;
+    while(Q_tail!=NULL){
+        temp_node = deq(&Q_tail);
+        for(int i=0;i<V;i++){
+            if(Graph_mat[temp_node][i]!=0 && (!visited[i])){
+                enq(&Q_head,&Q_tail,i);
+                visited[i] = true;
+                parent_path[i] = temp_node;
+            }
+        }
+    }
+    if(visited[d]){
+        return parent_path;
+    }
+    else{
+        return NULL;
+    }
+}
+
+int **Max_flow_ford_fulkerson(int **Graph_mat,int V,int s,int d){
+    int **G = (int **)malloc(sizeof(int *)*V);
+    for(int i=0;i<V;i++){
+        G[i] = (int *)malloc(sizeof(int)*V);
+        for(int j=0;j<V;j++){
+            G[i][j] = 0;
+        }
+    }
+    int *parent_path=BFS_find_path(Graph_mat,V,s,d);
+    int traverse_node;
+    int minimum_flow;
+    while(parent_path!=NULL){
+        traverse_node = d;
+        minimum_flow = Graph_mat[parent_path[traverse_node]][traverse_node];
+        while(traverse_node!=s){
+            minimum_flow = minimum(minimum_flow,Graph_mat[parent_path[traverse_node]][traverse_node]);
+            traverse_node = parent_path[traverse_node];
+        }
+        traverse_node = d;
+        while(traverse_node!=s){
+            Graph_mat[parent_path[traverse_node]][traverse_node] = Graph_mat[parent_path[traverse_node]][traverse_node]-minimum_flow;
+            Graph_mat[traverse_node][parent_path[traverse_node]] = Graph_mat[traverse_node][parent_path[traverse_node]]+minimum_flow;
+            G[parent_path[traverse_node]][traverse_node] = G[parent_path[traverse_node]][traverse_node]+minimum_flow;
+            traverse_node = parent_path[traverse_node];
+        }
+        parent_path = BFS_find_path(Graph_mat,V,s,d);
+    }
+    return G;
+}
+//Maximum flow algorithm end++++++++++++++++++++++++++++++++++++++++++++++
 int main(){
 /*
 //Merge sort check====================================================
@@ -773,9 +839,9 @@ int main(){
         }
         cout << endl;
     }*/
-    Graph_directed_to_undirected(Graph_mat,V);
-    Graph_list = Graph_mat_to_list(Graph_mat,V);
-    for(int i=0;i<V;i++){
+    //Graph_directed_to_undirected(Graph_mat,V);
+    //Graph_list = Graph_mat_to_list(Graph_mat,V);
+    /*for(int i=0;i<V;i++){
         cout << i << " is connected to ";
         temp = Graph_list[i];
         while(temp!=NULL){
@@ -795,7 +861,29 @@ int main(){
             temp = temp->next;
         }
         cout << endl;
+    }*/
+    int source = 0;
+    int destination = 5;
+    //Checking utility functions
+    /*int *parent_path=BFS_find_path(Graph_mat,V,source,destination);
+    int traverse_node = destination;
+    while(traverse_node!=source){
+        //minimum_flow = minimum(minimum_flow,Graph_mat[parent_path[traverse_node]][traverse_node]);
+        cout << parent_path[traverse_node] << " " <<traverse_node << " " << Graph_mat[parent_path[traverse_node]][traverse_node] << endl;
+        traverse_node = parent_path[traverse_node];
+    }*/
+    int **G = Max_flow_ford_fulkerson(Graph_mat,V,source,destination);
+    sll_node **Graph_list_max_flow = Graph_mat_to_list(G,V);
+    for(int i=0;i<V;i++){
+        cout << i << " is connected to ";
+        temp = Graph_list_max_flow[i];
+        while(temp!=NULL){
+            cout << temp->node << " (" << temp->weight << ")";
+            temp = temp->next;
+        }
+        cout << endl;
     }
+    cout << endl;
 //Graph check end+++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     return 0;
