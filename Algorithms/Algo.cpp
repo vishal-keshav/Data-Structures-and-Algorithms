@@ -511,7 +511,7 @@ int *Graph_topological_sort(sll_node **G,int V){
     }
     return temp;
 }
-//Topological Sorting end++++++++++++++++++++++++++++++++++++++++++++++++
+//Topological Sorting end
 //Single source shortest path algorithms
 void Shortest_path_dijktra(sll_node **Graph_list,int source,int *p,int *d,int V){
     //Initialization
@@ -639,8 +639,8 @@ int ** MST_kruskal(sll_node **Graph_list,int V){
     }
     return G;
 }
-//MST end++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//Maximum flow algorithm================================================
+//MST end
+//Maximum flow algorithm
 int minimum(int a,int b){
     return (a<b?a:b);
 }
@@ -704,7 +704,17 @@ int **Max_flow_ford_fulkerson(int **Graph_mat,int V,int s,int d){
     }
     return G;
 }
-//Maximum flow algorithm end++++++++++++++++++++++++++++++++++++++++++++++
+//Maximum flow algorithm end
+//Graph Algorithm end+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//Geometric Algorithms==========================================================================
+//Following geometric algorithms are implemented
+//1. Two line intersection
+//2. Line sweep algorithm(Intersection in N lines)
+//3. Convex Hull finder(Grahms scan)
+//4. Closest point finder using divide and conquer
+//5. Point in polygon finder
+
+
 int main(){
 /*
 //Merge sort check====================================================
