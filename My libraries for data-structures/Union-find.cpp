@@ -7,11 +7,15 @@
 5. long int size_of_set(i)
 
 Version 1 will utilized Path compresion and union by rank for efficiency*/
+#define VERSION1
 
 #include <iostream>
+#ifndef VERSION1
+#include <vector>
+#endif
 using namespace std;
 
-#define VERSION1
+
 #define DEBUG
 
 #ifdef VERSION1
@@ -88,7 +92,13 @@ class uf{
 #endif // VERSION
 
 #ifndef VERSION1
-
+//Version 2 has basic funtionality, thanks to Steven Halim
+#define iterate(var, from, to) for(long int var = long int(from); var<=long int(to); var++)
+vector<long int> pset(1000);
+void initSet(long int _size) {pset.resize(_size); iterate(i,0,_size-1) pset[i] = i;}
+int findset(long int i) {return (pset[i]==i)?i:(pset[i] = findset(pset[i]));}
+void unionset(long int i, long int j) {pset[findset(i)] = findset(j);}
+bool issameset(long int i, long int j) {return findset(i)==findset(j);}
 #endif // VERSION
 
 
