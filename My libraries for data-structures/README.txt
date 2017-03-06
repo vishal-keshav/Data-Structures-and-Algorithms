@@ -1,0 +1,1 @@
+This contains all the important data-structure and algorithm libraries not provided by STL. There are two versions for each library, one extended with possibly all the funtionality ever required and second a short version of same implementation for faster implementation during competition.
