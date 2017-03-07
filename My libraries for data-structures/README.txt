@@ -2,4 +2,4 @@ This contains all the important data-structure and algorithm libraries not provi
 
 Content:
 1. Two versions of union find data structure
-2. 
+2. Segment tree (extended version)
