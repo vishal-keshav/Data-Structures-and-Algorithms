@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
- 
+
 #include <stdio.h>
 #include <iostream>
 #include <math.h>
@@ -27,7 +27,7 @@ using namespace std;
 #define INT_MIN_OPS 1
 #define INT_SUM_OPS 2
 
-//#define DEBUG
+#define DEBUG
 
 class seg_tree{
 	public:
@@ -42,6 +42,14 @@ class seg_tree{
 		}
 		int query(int s_index, int e_index){
 			return query_util(1,0,nr_elem-1,s_index,e_index);
+		}
+		void update(int new_val, int index){
+			//Check for errors
+			if(!(index<nr_elem)){
+				return;
+			}
+			input_vec[index] = new_val;
+			update_util(1,0,nr_elem-1,new_val,index);
 		}
 
 	private:
@@ -109,6 +117,36 @@ class seg_tree{
 					return pos1+pos2;
 			}
 		}
+		void update_util(int node, int s_index, int e_index, int new_val, int index){
+			if(s_index == e_index){
+                if(ops==INT_SUM_OPS){
+                    segment_tree[node] = new_val;
+                }
+			}
+			else{
+				int mid_index = (e_index + s_index)/2;
+				if(s_index <= index && index <= mid_index){
+					update_util(2*node, s_index, mid_index, new_val, index);
+				}
+				else{
+					update_util(2*node+1, mid_index+1, e_index, new_val, index);
+				}
+				int left = segment_tree[2*node];
+				int right = 2*node+1 < tree_size?segment_tree[2*node+1]:-1;
+				switch(ops){
+					case INT_MAX_OPS:
+						segment_tree[node] = (right==-1)?left:((input_vec[left]<input_vec[right])?right:left);
+						break;
+					case INT_MIN_OPS:
+						segment_tree[node] = (right==-1)?left:((input_vec[left]<input_vec[right])?left:right);
+						break;
+					case INT_SUM_OPS:
+						segment_tree[node] = (right==-1)?left:(left+right);
+						break;
+				}
+			}
+			return;
+		}
 };
 
 int main(){
@@ -116,6 +154,8 @@ int main(){
 	vector<int> vec = {8, 7, 3, 9, 5, 1, 10};
 	seg_tree sg(vec,1);
 	cout << sg.query(1,1) << " "  << sg.query(2,3) << " " << sg.query(4,6)<<" " << sg.query(3,4)<< endl;
+    sg.update(1,3);
+    cout << sg.query(1,1) << " "  << sg.query(2,3) << " " << sg.query(4,6)<<" " << sg.query(3,4)<< endl;
 #endif
 	return 0;
 }
