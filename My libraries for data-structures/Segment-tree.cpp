@@ -37,7 +37,6 @@ class seg_tree{
 			input_vec = vec;
 			tree_size = (int)(2 * pow(2.0, floor((log((double)nr_elem) / log(2.0)) + 1)));
 			segment_tree.resize(tree_size,0);
-			cout << nr_elem << " " <<ops << " " <<segment_tree.size() << endl;
 			init_segment_tree(1,0,nr_elem-1);
 		}
 		int query(int s_index, int e_index){
