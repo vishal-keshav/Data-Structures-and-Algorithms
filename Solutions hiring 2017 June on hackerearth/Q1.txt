@@ -1,0 +1,65 @@
+﻿Question : 1
+Fibonacci with GCD
+
+Monk is really fond of Recurrence Relations, and he likes to study their characteristics in any possible manner. As you might know, his favorite one among all such recurrences is the famous Fibonacci series. For those of you who haven't,
+
+Fibonacci series is defined as:
+
+F(N)
+= F(N−1)+F(N−2) ∀ N≥3
+
+F(1)=1
+, F(2)=1
+
+.
+
+Now, in addition to such sequences, Number Theory is a really interesting concept, and Monk loves solving problems of those kinds too. GCD is a nice concept within the scope of this topic, and is defined to be :
+
+The GCD of two numbers is the greatest common divisor of those numbers. Eg: GCD(2,4)=2. Here, he has challenged you to the following task as he feels that this one is amazingly challenging . So, this is how it goes :
+
+You are given N
+integers, A1,A2,...,AN and Q queries. In each query, you are given two integers L and R(1≤L≤R≤N)
+
+. For each query, you have to find the value of:
+
+GCD(F(AL),F(AL+1),F(AL+2)......F(AR))%109+7
+
+Can you do it ?
+
+Constraints:
+1≤N≤105
+
+1≤Q≤105
+1≤Ai≤109
+1≤L≤R≤N
+
+Format of the input file:
+First line : Two integers N and Q.
+Second line : N space separated integers denoting array A.
+Next Q lines : Two space separated integers L and R.
+
+Format of the output file:
+Output the result of each query in a separate line.
+Sample Input
+
+3 2
+
+2 4 8
+
+1 3
+
+2 3
+
+Sample Output
+
+1
+
+3
+
+Explanation
+
+For query 1: GCD(F(2) , F(4), F(8))= GCD(1,3,21)=1 For query 2: GCD(F(4), F(8))= GCD(3,21)=3
+Note: Your code should be able to convert the sample input into the sample output. However, this is not enough to pass the challenge, because the code will be run on multiple test cases. Therefore, your code must solve this problem statement.
+Time Limit: 2.0 sec(s) for each input file
+Memory Limit: 256 MB
+Source Limit: 1024 KB

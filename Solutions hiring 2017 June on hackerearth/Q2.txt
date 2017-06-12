@@ -1,0 +1,71 @@
+﻿Question : 2
+Turtle's Path
+
+To be good at problem solving, Monk thinks that Graphs are a topic one can definitely not skip. They have a variety of applications in Networks, flows , Routing and so on.
+
+He has prepared some really interesting problems based on the same for talented programmers like you. He really adores his friends, and has chosen one of this close friends Mona as the main character for this task. So, this is how it goes :
+
+You've got a table of size N*M containing positive integers. We'll consider the table rows numbered from top to bottom 1 through N, and the columns numbered from left to right 1 through M. Then we'll denote the cell in row x and column y as (x, y).
+
+Initially cell (1, 1) contains one turtle named Mona. Mona wants to get to cell (N, M). Some cells of the table have obstacles. A cell is considered to be containing an obstacle if value of the cell is a NON-PRIME NUMBER. That means that Mona can only move through PRIME Numbers. It is guaranteed that upper left corner (1,1) contains a prime number.
+
+Mona can go from cell (x, y) to one of three cells (x + 1, y ), ( x , y + 1 ) and ( x + 1, y + 1 ) only if the required cell doesn't contain an obstacle. Help him find the number of ways in which it can go from cell (1, 1) to cell (N, M).
+
+In addition, you need to print the lexicographical largest path to reach cell (N,M).
+
+Note: A cell (x1,y1
+) is lexicographical larger than another cell (x2,y2) if either x1>x2 or if x1=x2 and y1>y2. A path X is lexicographical larger than another path Y, if the first cell that does not match is lexicographical larger in X than in Y. For example, cell (3,2) is lexicographical larger than cell (3,1).
+Let, Path Y: (1,1)(2,1)(3,1)(3,2)(3,3)
+Path X: (1,1)(2,1)(3,2)(3,3)
+Path X is lexicographical larger than another path Y, because the first cell that does not match (i.e. (3,2) in X and (3,1
+
+) in Y) is lexicographical larger in X than in Y.
+
+Input Format
+
+The first line contains two space separated integers, N (number of rows) and M (number of columns).
+
+Then N lines follow, each containing M space separated integers.
+
+Constraints
+
+1 <= N,M <= 103
+2 <= A[x][y] <= 105 (the elements of the matrix)
+
+Output Format
+
+In the first line, print the total number of possible ways to reach (N,M) from (1,1). Since this number may be too large, print the answer modulo 109 +7.
+
+Print the cell indexes (space separated) of each step of his lexicographically largest path in a new line .
+If no path exists, only print 0 in first line.
+
+(See sample test case for clarification)
+Sample Input
+
+3 3
+2 3 7
+5 4 2
+3 7 11
+
+Sample Output
+
+4
+1 1
+2 1
+3 2
+3 3
+
+Explanation
+
+There are four ways to reach (3,3) from (1,1).
+
+Path 1. (1,1) (1,2) (1,3) (2,3) (3,3)
+Path 2. (1,1) (1,2) (2,3) (3,3)
+Path 3. (1,1) (2,1) (3,1) (3,2) (3,3)
+Path 4. (1,1) (2,1) (3,2) (3,3)
+
+Lexicographical Order -> 4 > 3 > 2 > 1
+Note: Your code should be able to convert the sample input into the sample output. However, this is not enough to pass the challenge, because the code will be run on multiple test cases. Therefore, your code must solve this problem statement.
+Time Limit: 1.0 sec(s) for each input file
+Memory Limit: 256 MB
+Source Limit: 1024 KB
