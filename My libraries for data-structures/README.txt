@@ -4,3 +4,7 @@ Content:
 1. Two versions of union find data structure
 2. Segment tree (extended version)
 3. next_permutation generator
+
+TO-DO LIST
+1. Treap
+2. KD tree
