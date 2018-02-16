@@ -17,5 +17,6 @@
  */
  
 //Following will be implemented
-// 1. Rabin Karp
-// 2. Knuth-morris-pratt algorithm
+// 1. Rabin Karp and general hashing strategy
+// 2. Maximum length prefix-suffix
+// 3. Knuth-morris-pratt algorithm
