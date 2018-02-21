@@ -19,6 +19,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -50,47 +51,44 @@ void LPS(string str, int *out, int n){
 	return;
 }
 
-void search(char pat[], char txt[], int q)
-{
-    int M = strlen(pat);
-    int N = strlen(txt);
-    int i, j;
-    int p = 0;
-    int t = 0;
-    int h = 1;
- 
-    for (i = 0; i < M-1; i++)
-        h = (h*d)%q;
- 
-    for (i = 0; i < M; i++)
-    {
-        p = (d*p + pat[i])%q;
-        t = (d*t + txt[i])%q;
+vector<int> hash_search(string pattern, string text, bool fast){
+	int prime_mod = 101;
+	int d = 256;
+    int M = pattern.size();
+    int N = text.size();
+    int i, j, p=0, t=0, h=1;
+	vector<int> ret;
+    for (i = 0; i < M-1; i++){
+        h = (h*d)%prime_mod;
+	}
+    for (i = 0; i < M; i++){
+        p = (d*p + pattern[i])%prime_mod;
+        t = (d*t + text[i])%prime_mod;
     }
-    for (i = 0; i <= N - M; i++)
-    {
- 
-        if ( p == t )
-        {
-
-            for (j = 0; j < M; j++)
-            {
-                if (txt[i+j] != pat[j])
-                    break;
-            }
-
-            if (j == M)
-                printf("Pattern found at index %d \n", i);
+    for (i = 0; i <= N - M; i++){
+        if ( p == t){
+			if(fast){
+				ret.push_back(i);
+			}
+			else{
+				for (j = 0; j < M; j++){
+					if (text[i+j] != pattern[j]){
+						break;
+					}
+				}
+				if (j == M){
+					ret.push_back(i);
+				}
+			}
         }
- 
-        if ( i < N-M )
-        {
-            t = (d*(t - txt[i]*h) + txt[i+M])%q;
-
-            if (t < 0)
-            t = (t + q);
+        if (i < N-M){
+            t = (d*(t - text[i]*h) + text[i+M])%prime_mod;
+            if (t < 0){
+				t = (t + prime_mod);
+			}
         }
     }
+	return ret;
 }
 
 int main(){
@@ -99,6 +97,12 @@ int main(){
 	LPS(sample, lps, sample.size());
 	for(int i=0;i<sample.size();i++){
 		cout << lps[i] << " ";
+	}
+	cout << endl;
+	string p = "ana";
+	vector<int> match = hash_search(p, sample, true);
+	for(int i=0;i<match.size();i++){
+		cout << match[i] << " ";
 	}
 
 	return 0;
