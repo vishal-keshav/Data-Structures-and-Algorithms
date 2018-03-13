@@ -50,6 +50,42 @@ int compute(void){
 	return ret;
 }
 
+int compute_optimized(void){
+	int ret = 0;
+	int flip_counter = 0;
+	vector<int> flip_minus(S+1,0);
+	for(int i=0;i<=S-K;i++){
+		flip_counter = (flip_counter - flip_minus[i]);
+		if(pan[i]=='-' && flip_counter%2==0){
+			ret++;
+			flip_counter++;
+			flip_minus[i+K] = flip_counter;
+		}
+		else if(pan[i]=='+' && flip_counter%2==1){
+			ret++;
+			flip_counter++;
+			flip_minus[i+K] = flip_counter;
+		}
+		else{
+			//do nothing
+		}
+
+	}
+	for(int i = S-K+1;i<S;i++){
+		flip_counter = flip_counter - flip_minus[i];
+		if(pan[i]=='-' && flip_counter%2==0){
+			return -1;
+		}
+		else if(pan[i]=='+' && flip_counter%2==1){
+			return -1;
+		}
+		else{
+			//do nothing
+		}
+	}
+	return ret;
+}
+
 int main(){
 	int nr_case = 1;
 	int ans;
@@ -57,7 +93,8 @@ int main(){
 	while(T--){
 		cin >> pan >> K;
 		S = pan.size();
-		ans = compute();
+		//ans = compute();
+		ans = compute_optimized();
 		if(ans!=-1){
 			cout << "Case #" << nr_case << ": " << ans << endl;
 		}
