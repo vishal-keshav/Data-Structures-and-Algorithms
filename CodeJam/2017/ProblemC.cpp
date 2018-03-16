@@ -19,11 +19,11 @@ void init(void){
 			grid[i][j] = '.';
 		}
 	}
-	used_row.clear();
-	used_col.clear();
-	used_diag1.clear();
-	used_diag2.clear();
-	used_diag2_negative.clear();
+	fill(used_row.begin(), used_row.end(), 0);
+	fill(used_col.begin(), used_col.end(), 0);
+	fill(used_diag1.begin(), used_diag1.end(), 0);
+	fill(used_diag2.begin(), used_diag2.end(), 0);
+	fill(used_diag2_negative.begin(), used_diag2_negative.end(), 0);
 	return;
 }
 
