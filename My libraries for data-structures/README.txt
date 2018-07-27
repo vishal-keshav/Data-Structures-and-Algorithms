@@ -5,6 +5,7 @@ Content:
 2. Segment tree (extended version)
 3. next_permutation generator
 4. String matching algorithms(KMP and RK)
+5. Heaps
 
 TO-DO LIST
 1. Treap
